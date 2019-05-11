@@ -18,6 +18,7 @@ module.exports = {
 async function createSchedule(req) {
   let date = req.body.date;
   let kid = req.body.kid;
+  let link = req.body.link;
   let data = {
     firstname: req.body.firstname,
     surname: req.body.surname,
@@ -28,29 +29,40 @@ async function createSchedule(req) {
     phone: req.body.phone,
     iban: req.body.iban
   };
+  // modify it for users
+  if (jobs.find((e) => e.kid == kid)) {
+    throw 'already schedule with kid running';
+  }
   try {
     // at least 20sec difference
     const job = new CronJob(new Date(date), async function () {
       // TODO start to exec registerPhase
       jobs.splice(jobs.indexOf(this), 1);
-      await scraper.registerForKid(kid, data);
+      await scraper.registerForKid(link, kid, data);
       // remove from job queue
       //jobs.splice(jobs.indexOf(this), 1);
     }, null, false, "Europe/Berlin");
-    job.kid = kid;
     job.start();
-    jobs.push(job);
+    jobs.push({
+      job: job,
+      data: data,
+      kid: kid,
+      link: link,
+    });
   } catch(e) {
     throw 'invalid date'
   }
 }
 
 async function listSchedules() {
-  return jobs.map(job => {
+  return jobs.map(j => {
     return {
-      running: job.running,
-      kid: job.kid,
-      next: job.nextDate()
+      kid: j.kid,
+      running: j.job.running,
+      link: j.link,
+      date: j.job.nextDate(),
+      email: "test@example.de",
+      data: j.data
     }
   })
 }
