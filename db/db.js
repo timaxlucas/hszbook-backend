@@ -11,7 +11,7 @@ const pool = new Pool({
 
 async function uploadHistory(data) {
   forEach(data, (d) => {
-    pool.query('INSERT INTO dbo.history(kursnr, state) VALUES ($1, $2)', [d.kursnr, d.state]);
+    pool.query('INSERT INTO dbo.history(kursnr, state) VALUES ($1, $2)', [d.kid, d.state]);
   });
 }
 

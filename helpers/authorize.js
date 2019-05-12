@@ -15,7 +15,7 @@ function authorize(roles = []) {
         // authenticate JWT token and attach user to request object (req.user)
         expressJwt({
             secret,
-            isRevoked, // revoke token if user no longer exists
+            /*isRevoked,*/ // revoke token if user no longer exists
             requestProperty: 'user',
             getToken: function fromHeaderOrQuerystring(req) {
                 // try to get jwt token either from header or query param
@@ -47,6 +47,7 @@ async function isRevoked(req, payload, done) {
 
     // revoke token if user no longer exists
     if (!user) {
+        console.log("rwoek");
         return done(null, true);
     }
 

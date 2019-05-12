@@ -25,7 +25,7 @@ async function authenticate({ email, password }) {
         const { hash, id, ...userWithoutHash } = user;
         let roles = (await db.client.query("SELECT role FROM dbo.role WHERE uid = $1", [user.id])).rows;
         roles = roles.map(o => o.role);
-        const token = jwt.sign({ sub: user.id, roles: roles, email: user.email }, config.secret);
+        const token = jwt.sign({ roles: roles, email: user.email }, config.secret);
         return {
             ...userWithoutHash,
             roles,

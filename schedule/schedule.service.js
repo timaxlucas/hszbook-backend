@@ -4,15 +4,10 @@ const scraper = require('../scraper/scraper');
 const db = require('../db/db');
 var jobs = [];
 
-var historyJob = new CronJob("*/5 * * * *", async function () {
-  console.log("uploading history");
-  let x = await scraper.getData('https://buchung.hsz.rwth-aachen.de/angebote/Sommersemester_2019/_Volleyball_Spielbetrieb.html');
-  await db.uploadHistory(x);
-}, null, true, "Europe/Berlin");
-
 module.exports = {
   createSchedule,
-  listSchedules
+  listSchedules,
+  cancelSchedule
 };
 
 async function createSchedule(req) {
@@ -30,8 +25,12 @@ async function createSchedule(req) {
     iban: req.body.iban
   };
   // modify it for users
-  if (jobs.find((e) => e.kid == kid)) {
+  if (jobs.find((e) => e.kid == kid && e.email == req.user.email)) {
     throw 'already schedule with kid running';
+  }
+  if (date == 0) {
+    scraper.registerForKid(link, kid, data);
+    return;
   }
   try {
     // at least 20sec difference
@@ -46,6 +45,7 @@ async function createSchedule(req) {
     jobs.push({
       job: job,
       data: data,
+      email: req.user.email,
       kid: kid,
       link: link,
     });
@@ -54,14 +54,32 @@ async function createSchedule(req) {
   }
 }
 
-async function listSchedules() {
-  return jobs.map(j => {
+async function cancelSchedule(req) {
+  let email = req.body.email;
+  let kid = req.body.kid;
+  let job = jobs.find((d) => d.kid == kid && d.email == email);
+  if (!job) {
+    throw 'schedule not found';
+  }
+  if (req.user.roles.indexOf("admin") == -1 && job.email != req.user.email) {
+    throw 'you are not allowed to cancel others schedules'
+  }
+  job.job.stop();
+  jobs.splice(jobs.indexOf(job), 1);
+}
+
+async function listSchedules(req, all) {
+  let res = jobs;
+  if (!all) {
+    res = res.filter(j => j.email == req.user.email);
+  }
+  return res.map(j => {
     return {
       kid: j.kid,
       running: j.job.running,
       link: j.link,
       date: j.job.nextDate(),
-      email: "test@example.de",
+      email: j.email,
       data: j.data
     }
   })
