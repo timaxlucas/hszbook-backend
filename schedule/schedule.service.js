@@ -1,5 +1,5 @@
 
-const { CronJob, CronTime } = require('cron');
+const { CronJob } = require('cron');
 const scraper = require('../scraper/scraper');
 const moment = require('moment');
 const db = require('../db/db');
@@ -13,7 +13,7 @@ module.exports = {
 };
 
 
-// load schedules from database
+// load schedules from database 
 (async () => {
   let res = await db.getSchedule();
   forEach(res.rows, (r) => {

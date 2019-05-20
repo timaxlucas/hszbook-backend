@@ -7,7 +7,7 @@ const db = require('../db/db');
 module.exports = {
     authenticate,
     getAll,
-    getById,
+    getByMail,
     create,
     update,
     delete: _delete,
@@ -39,36 +39,8 @@ async function getAll() {
     return await User.find().select('-hash');*/
 }
 
-async function getById(id) {/*
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        throw 'invalid id';
-    }
-
-    return await User.findById(id).select('-hash');*/
-}
-
-async function getScore(username) {/*
-    let x = await Post.aggregate([
-        {
-            $match: {
-                'username': username
-            },
-        },
-        {
-            $project: {
-                count: { $size: "$upvotes" }
-            }
-        },
-        {
-            $group: {
-                _id: null,
-                count: {
-                    $sum: "$count"
-                }
-            }
-        }
-    ]);
-    return x && x[0] && (x[0].count * 5) || 0;*/
+async function getByMail(mail) {
+    return await db.client.query("SELECT email FROM dbo.user WHERE email = $1", [mail]);
 }
 
 async function getByUsername(username) {/*
