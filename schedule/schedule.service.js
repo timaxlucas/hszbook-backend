@@ -50,7 +50,7 @@ async function createSchedule({ date, kid, link, ...data }, { user }) {
   await startJob(date, kid, link, data, user);
 }
 
-async function cancelSchedule({ userToCancel, kid }, { user, roles }) {
+async function cancelSchedule({ user: userToCancel, kid }, { user, roles }) {
   let job = jobs.find((d) => d.kid == kid && d.user == userToCancel);
   if (!job) {
     throw 'schedule not found';
