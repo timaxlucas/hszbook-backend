@@ -13,6 +13,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
 
+
 // ==== api routes ====
 app.use('/schedule', authorize(), require('./schedule/schedule.controller'));
 app.use('/users', require('./users/user.controller'));
@@ -23,9 +24,9 @@ app.use('/course',  authorize(), require('./course/course.controller'));
 app.use(errorHandler);
 
 
-if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.join(__dirname, 'public')));
-}
+
+
+
 // start server
 const port = process.env.NODE_ENV === 'production' ? 80 : 4000;
 const server = app.listen(port, function () {

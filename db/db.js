@@ -8,6 +8,18 @@ const pool = new Pool({
 });
 
 
+async function uploadSchedule({ user, date, kid, link, data }) {
+  await pool.query(`INSERT INTO dbo.schedule(data, date, kid, link, "user") VALUES ($1, $2, $3, $4, $5)`, [data, date, kid, link, user]);
+}
+
+async function getSchedule() {
+  let res = await pool.query('SELECT * FROM dbo.schedule');
+  return res;
+}
+
+async function removeSchedule({ user, kid }) {
+  await pool.query(`DELETE FROM dbo.schedule WHERE "user" = $1 and kid = $2`, [user, kid]);
+}
 
 async function uploadHistory(data) {
   forEach(data, (d) => {
@@ -20,5 +32,5 @@ async function close() {
 }
 
 
-module.exports = { client: pool, close: close, uploadHistory: uploadHistory }
+module.exports = { client: pool, close, uploadHistory, uploadSchedule, getSchedule, removeSchedule }
 
