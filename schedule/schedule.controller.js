@@ -12,25 +12,25 @@ router.get('/all', authorize("admin"), listAllSchedules);
 module.exports = router;
 
 function createSchedule(req, res, next) {
-    scheduleService.createSchedule(req.user.email, req.body)
+    scheduleService.createSchedule(req.body, req.user)
         .then(x => res.json(x))
         .catch(err => next(err));
 }
 
 function listMySchedules(req, res, next) {
-    scheduleService.listSchedules(req, false)
+    scheduleService.listSchedules(req.body, req.user, false)
         .then(x => res.json(x))
         .catch(err => next(err));
 }
 
 function listAllSchedules(req, res, next) {
-    scheduleService.listSchedules(req, true)
+    scheduleService.listSchedules(req.body, req.user, true)
         .then(x => res.json(x))
         .catch(err => next(err));
 }
 
 function cancelSchedule(req, res, next) {
-    scheduleService.cancelSchedule(req)
+    scheduleService.cancelSchedule(req.body, req.user)
         .then(x => res.json(x))
         .catch(err => next(err));
 }

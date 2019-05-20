@@ -1,8 +1,9 @@
 
-const CronJob = require('cron').CronJob;
+const { CronJob, CronTime } = require('cron');
 const scraper = require('../scraper/scraper');
+const moment = require('moment');
 const db = require('../db/db');
-var jobs = [];
+const jobs = [];
 
 module.exports = {
   createSchedule,
@@ -10,48 +11,61 @@ module.exports = {
   cancelSchedule
 };
 
-async function createSchedule(userEmail, reqData) {
-  let { date, kid, link, ...data } = reqData
-  
-  // modify it for users
-  if (jobs.find((e) => e.kid == kid && e.email == userEmail)) {
-    throw 'already schedule with kid running';
+// TODO LOAD JOBS FROM DATABASE
+
+async function startJob(date, kid, link, data, user) {
+  const time = moment(new Date(date));
+  if (time.isBefore(Date.now() + 1000 * 20)) {
+    throw `invalid date: date is ${time.fromNow()}`;
+  }
+
+  const job = new CronJob(time, async () => {
+    // delete job from jobqueue
+    jobs.splice(jobs.indexOf(this), 1);
+
+    // delete job from database
+    // TODO
+
+    // start register process
+    await scraper.registerForKid(link, kid, data);
+  }, null, false, "Europe/Berlin");
+  job.start();
+  jobs.push({ job, data, user, kid, link });
+}
+
+async function createSchedule({ date, kid, link, ...data }, { user }) {
+  // only one registration per event & user
+  if (jobs.find((e) => e.kid == kid && e.user == user)) {
+    throw 'You already scheduled a registration for this course!';
   }
   if (date == 0) {
     scraper.registerForKid(link, kid, data);
     return;
   }
-  try {
-    // at least 20sec difference
-    const job = new CronJob(new Date(date), async function () {
-      jobs.splice(jobs.indexOf(this), 1);
-      await scraper.registerForKid(link, kid, data);
-    }, null, false, "Europe/Berlin");
-    job.start();
-    jobs.push({ job, data, email: userEmail, kid, link });
-  } catch(e) {
-    throw 'invalid date'
-  }
+  // at least 20sec difference
+
+  // upload to DB
+
+  // start job
+  await startJob(date, kid, link, data, user);
 }
 
-async function cancelSchedule(req) {
-  let email = req.body.email;
-  let kid = req.body.kid;
-  let job = jobs.find((d) => d.kid == kid && d.email == email);
+async function cancelSchedule({ userToCancel, kid }, { user, roles }) {
+  let job = jobs.find((d) => d.kid == kid && d.user == userToCancel);
   if (!job) {
     throw 'schedule not found';
   }
-  if (req.user.roles.indexOf("admin") == -1 && job.email != req.user.email) {
+  if (job.user != user && roles.indexOf("admin") == -1) {
     throw 'you are not allowed to cancel others schedules'
   }
   job.job.stop();
   jobs.splice(jobs.indexOf(job), 1);
 }
 
-async function listSchedules(req, all) {
+async function listSchedules({}, { user }, all) {
   let res = jobs;
   if (!all) {
-    res = res.filter(j => j.email == req.user.email);
+    res = res.filter(j => j.user == user);
   }
   return res.map(j => {
     return {
@@ -59,7 +73,7 @@ async function listSchedules(req, all) {
       running: j.job.running,
       link: j.link,
       date: j.job.nextDate(),
-      email: j.email,
+      user: j.user,
       data: j.data
     }
   })
