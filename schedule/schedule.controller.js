@@ -12,7 +12,7 @@ router.get('/all', authorize("admin"), listAllSchedules);
 module.exports = router;
 
 function createSchedule(req, res, next) {
-    scheduleService.createSchedule(req)
+    scheduleService.createSchedule(req.user.email, req.body)
         .then(x => res.json(x))
         .catch(err => next(err));
 }

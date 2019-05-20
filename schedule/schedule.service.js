@@ -10,22 +10,11 @@ module.exports = {
   cancelSchedule
 };
 
-async function createSchedule(req) {
-  let date = req.body.date;
-  let kid = req.body.kid;
-  let link = req.body.link;
-  let data = {
-    firstname: req.body.firstname,
-    surname: req.body.surname,
-    street: req.body.street,
-    city: req.body.city,
-    matrnr: req.body.matrnr,
-    email: req.body.email,
-    phone: req.body.phone,
-    iban: req.body.iban
-  };
+async function createSchedule(userEmail, reqData) {
+  let { date, kid, link, ...data } = reqData
+  
   // modify it for users
-  if (jobs.find((e) => e.kid == kid && e.email == req.user.email)) {
+  if (jobs.find((e) => e.kid == kid && e.email == userEmail)) {
     throw 'already schedule with kid running';
   }
   if (date == 0) {
@@ -35,20 +24,11 @@ async function createSchedule(req) {
   try {
     // at least 20sec difference
     const job = new CronJob(new Date(date), async function () {
-      // TODO start to exec registerPhase
       jobs.splice(jobs.indexOf(this), 1);
       await scraper.registerForKid(link, kid, data);
-      // remove from job queue
-      //jobs.splice(jobs.indexOf(this), 1);
     }, null, false, "Europe/Berlin");
     job.start();
-    jobs.push({
-      job: job,
-      data: data,
-      email: req.user.email,
-      kid: kid,
-      link: link,
-    });
+    jobs.push({ job, data, email: userEmail, kid, link });
   } catch(e) {
     throw 'invalid date'
   }

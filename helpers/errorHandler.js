@@ -20,6 +20,10 @@ function errorHandler(err, req, res, next) {
         return res.status(403).json({ message: 'Forbidden' });
     }
 
+    if (err.code === 'ECONNREFUSED') {
+        return res.status(503).json({ message: 'Cannot connect to DB' });
+    }
+
     if (err.name === 'UnauthorizedError') {
         // jwt authentication error
         return res.status(401).json({ message: 'Invalid Token' });
