@@ -1,7 +1,7 @@
 
 const CronJob = require('cron').CronJob;
 const scraper = require('../scraper/scraper');
-const db = require('../db/db');
+const db = require('../../db/db');
 const rxjs = require('rxjs');
 const moment = require('moment');
 

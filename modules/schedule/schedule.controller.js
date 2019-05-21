@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const scheduleService = require('./schedule.service');
-const authorize = require("../helpers/authorize");
+const authorize = require("../../helpers/authorize");
 
 // routes
 router.post('/', createSchedule);

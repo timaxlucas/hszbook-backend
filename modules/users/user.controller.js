@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const userService = require('./user.service');
-const authorize = require('../helpers/authorize');
-const Role = require('../helpers/role');
+const authorize = require('../../helpers/authorize');
+const Role = require('../../helpers/role');
 
 // routes
 router.post('/authenticate', authenticate);

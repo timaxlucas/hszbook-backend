@@ -2,7 +2,7 @@
 const { CronJob } = require('cron');
 const scraper = require('../scraper/scraper');
 const moment = require('moment');
-const db = require('../db/db');
+const db = require('../../db/db');
 const forEach = require('async-foreach').forEach;
 const jobs = [];
 

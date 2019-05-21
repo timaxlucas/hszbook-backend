@@ -4,7 +4,7 @@ const cors = require('cors');
 const path = require('path');
 const bodyParser = require('body-parser');
 const errorHandler = require('./helpers/errorHandler');
-const scraper = require('./scraper/scraper');
+const scraper = require('./modules/scraper/scraper');
 const db = require('./db/db');
 const authorize = require('./helpers/authorize');
 // const db = require('./helpers/db')
@@ -15,9 +15,9 @@ app.use(cors());
 
 
 // ==== api routes ====
-app.use('/schedule', authorize(), require('./schedule/schedule.controller'));
-app.use('/users', require('./users/user.controller'));
-app.use('/course',  authorize(), require('./course/course.controller'));
+app.use('/schedule', authorize(), require('./modules/schedule/schedule.controller'));
+app.use('/users', require('./modules/users/user.controller'));
+app.use('/course',  authorize(), require('./modules/course/course.controller'));
 
 
 // global error handler
