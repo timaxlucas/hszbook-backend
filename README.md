@@ -1,10 +1,10 @@
-# hszbook-backend
+# 📚 hszbook-backend
 
-## Quickstart
+## ✨ Quickstart
 
     npm install && npm start
     
-## Docker
+## 🐋 Docker
 Building the image
 
     docker build . --tag hszbook-backend 
