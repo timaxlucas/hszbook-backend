@@ -1,6 +1,6 @@
 # 📚 hszbook-backend
 
-[![Build Status](https://travis-ci.com/Astraioz/hszbook-backend.svg?token=1w81GuSsC3hkfgp1JvDQ&branch=master)](https://travis-ci.com/Astraioz/hszbook-backend)
+[![Build Status](https://travis-ci.com/timaxlucas/hszbook-backend.svg?token=1w81GuSsC3hkfgp1JvDQ&branch=master)](https://travis-ci.com/timaxlucas/hszbook-backend)
 
 ## ✨ Quickstart
 
