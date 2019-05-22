@@ -10,6 +10,7 @@
     
 ## Requirements
 
+ - [hszbook](https://github.com/timaxlucas/hszbook)
  - Postgres DB (see [this](pg-setup.sql) for schema setup)
     
 ## Docker
