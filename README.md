@@ -1,14 +1,18 @@
-# 📚 hszbook-backend
+# 📜 hszbook-backend
 
 [![Build Status](https://travis-ci.com/timaxlucas/hszbook-backend.svg?token=1w81GuSsC3hkfgp1JvDQ&branch=master)](https://travis-ci.com/timaxlucas/hszbook-backend)
 
 > DISCLAIMER: To run hszbook-backend you need dependency hszbook, which is currently not publicly available
 
-## ✨ Quickstart
+## Quickstart
 
     npm install && npm start
     
-## 🐋 Docker
+## Requirements
+
+ - Postgres DB (see [this](pg-setup.sql) for schema setup)
+    
+## Docker
 Building the image
 
     docker build . --tag hszbook-backend 
