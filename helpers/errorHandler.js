@@ -1,7 +1,8 @@
+const logger = require('./logger');
+
 module.exports = errorHandler;
 
 function errorHandler(err, req, res, next) {
-    //console.log(err);
 
     if (typeof (err) === 'string') {
         // custom application error
@@ -29,7 +30,7 @@ function errorHandler(err, req, res, next) {
         return res.status(401).json({ message: 'Invalid Token' });
     }
 
-    console.log("DEBUG: Error in " + req.url + ": " + err.name + " | " + err.code + " | " + err + " | " + err.stack);
+    logger.debug("DEBUG: Error in " + req.url + ": " + err.name + " | " + err.code + " | " + err + " | " + err.stack, { source: 'error-handler' });
     // default to 500 server error
     return res.status(500).json({ message: err.message });
 }

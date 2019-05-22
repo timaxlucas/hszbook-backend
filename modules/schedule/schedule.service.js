@@ -3,6 +3,7 @@ const { CronJob } = require('cron');
 const scraper = require('../scraper/scraper');
 const moment = require('moment');
 const db = require('../../db/db');
+const logger = require('../../helpers/logger');
 const forEach = require('async-foreach').forEach;
 const jobs = [];
 
@@ -19,7 +20,7 @@ module.exports = {
   forEach(res.rows, (r) => {
     createSchedule({ date: r.date, kid: r.kid, link: r.link, ...r.data}, { user: r.user }, false);
   });
-  console.log(`Loaded ${res.rowCount} schedule(s) from database`); 
+  logger.info(`Loaded ${res.rowCount} schedule(s) from database`, { source: 'schedule' })
 })()
 
 

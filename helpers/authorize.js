@@ -1,6 +1,7 @@
 const expressJwt = require('express-jwt');
 const { secret } = require('../config.json');
 const userService = require('../modules/users/user.service');
+const logger = require('./logger');
 
 module.exports = authorize;
 
@@ -47,7 +48,7 @@ async function isRevoked(req, payload, done) {
 
     // revoke token if user no longer exists
     if (!user) {
-        console.log("auth revoked");
+        logger.info('authorization revoked', { source: 'auth' });
         return done(null, true);
     }
 
