@@ -1,9 +1,8 @@
 
-const CronJob = require('cron').CronJob;
+const { CronJob } = require('cron');
 const scraper = require('../scraper/scraper');
-const db = require('../../db/db');
 const rxjs = require('rxjs');
-const moment = require('moment');
+const logger = require('../../helpers/logger');
 
 const courseSubject = new rxjs.BehaviorSubject();
 courseSubject.next([{}]);
@@ -26,7 +25,8 @@ async function updateCourseData() {
     courseSubject.next({
         timestamp: Date.now(),
         data: data
-    })
+    });
+    logger.debug(`updated course data`, { source: 'course' });
 }
 
 updateCourseData();

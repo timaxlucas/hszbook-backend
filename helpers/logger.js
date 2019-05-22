@@ -29,7 +29,7 @@ const jsonFormat = format.combine(
 const logger = createLogger({
   transports: [
     new transports.Console({
-      level: "debug",
+      level: "silly",
       handleExceptions: true,
       format: format.combine(
         format.colorize(),

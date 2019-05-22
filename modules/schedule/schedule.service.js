@@ -4,7 +4,7 @@ const scraper = require('../scraper/scraper');
 const moment = require('moment');
 const db = require('../../db/db');
 const logger = require('../../helpers/logger');
-const forEach = require('async-foreach').forEach;
+const { forEach } = require('async-foreach');
 const jobs = [];
 
 module.exports = {

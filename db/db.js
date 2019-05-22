@@ -1,8 +1,7 @@
-const { Pool, Client } = require('pg');
-const format = require('pg-format');
+const { Pool } = require('pg');
 const logger = require('../helpers/logger');
-const forEach = require('async-foreach').forEach;
-const connectionString = require('../config.json').connectionString;
+const { forEach } = require('async-foreach');
+const { connectionString } = require('../config.json');
 
 const pool = new Pool({
   connectionString: connectionString,
