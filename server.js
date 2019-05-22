@@ -5,7 +5,6 @@ const path = require('path');
 const logger = require('./helpers/logger');
 const bodyParser = require('body-parser');
 const errorHandler = require('./helpers/errorHandler');
-const scraper = require('./modules/scraper/scraper');
 const db = require('./db/db');
 const authorize = require('./helpers/authorize');
 // const db = require('./helpers/db')

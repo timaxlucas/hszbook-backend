@@ -1,6 +1,6 @@
 
 const { CronJob } = require('cron');
-const scraper = require('../scraper/scraper');
+const { getData } = require('../../../hszbook');
 const rxjs = require('rxjs');
 const logger = require('../../helpers/logger');
 
@@ -21,7 +21,7 @@ async function listCourses() {
 }
 
 async function updateCourseData() {
-    let data = await scraper.getData('https://buchung.hsz.rwth-aachen.de/angebote/Sommersemester_2019/_Volleyball_Spielbetrieb.html');
+    let data = await getData('https://buchung.hsz.rwth-aachen.de/angebote/Sommersemester_2019/_Volleyball_Spielbetrieb.html');
     courseSubject.next({
         timestamp: Date.now(),
         data: data

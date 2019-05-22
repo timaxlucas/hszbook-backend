@@ -1,6 +1,6 @@
 
 const { CronJob } = require('cron');
-const scraper = require('../scraper/scraper');
+const { getData, registerForCourse } = require('../../../hszbook');
 const moment = require('moment');
 const db = require('../../db/db');
 const logger = require('../../helpers/logger');
@@ -33,7 +33,7 @@ async function createSchedule({ date, kid, link, ...data }, { user }, uploadToDB
     throw 'You already scheduled a registration for this course!';
   }
   if (date == 0) {
-    scraper.registerForKid(link, kid, data);
+    registerForCourse(link, kid, data);
     return;
   }
   if (time.isBefore(Date.now() + 1000 * 20)) {
@@ -53,7 +53,7 @@ async function createSchedule({ date, kid, link, ...data }, { user }, uploadToDB
     await db.removeSchedule({ user, kid });
 
     // start register process
-    await scraper.registerForKid(link, kid, data);
+    await registerForCourse(link, kid, data);
   }, null, false, "Europe/Berlin");
   job.start();
   jobs.push({ job, data, user, kid, link });
