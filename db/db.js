@@ -21,7 +21,7 @@ async function uploadSchedule({ user, date, kid, link, data }) {
 }
 
 async function getSchedule() {
-  let res = await pool.query('SELECT * FROM dbo.schedule');
+  const res = await pool.query('SELECT * FROM dbo.schedule');
   return res;
 }
 
@@ -30,7 +30,7 @@ async function removeSchedule({ user, kid }) {
 }
 
 async function uploadHistory(data) {
-  forEach(data, (d) => {
+  forEach(data, d => {
     pool.query('INSERT INTO dbo.history(kursnr, state) VALUES ($1, $2)', [d.kid, d.state]);
   });
 }
@@ -40,5 +40,5 @@ async function close() {
 }
 
 
-module.exports = { client: pool, close, uploadHistory, uploadSchedule, getSchedule, removeSchedule }
+module.exports = { client: pool, close, uploadHistory, uploadSchedule, getSchedule, removeSchedule };
 

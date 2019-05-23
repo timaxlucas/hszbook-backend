@@ -4,42 +4,42 @@ const bcrypt = require('bcryptjs');
 const db = require('../../db/db');
 
 module.exports = {
-    authenticate,
-    getAll,
-    getByMail,
-    create,
-    update,
-    delete: _delete,
-    getByUsername
+  authenticate,
+  getAll,
+  getByMail,
+  create,
+  update,
+  delete: _delete,
+  getByUsername
 };
 
 async function authenticate({ email, password }) {
-    let user = await db.client.query("SELECT * FROM dbo.user WHERE email = $1", [email]);
-    if (user.rowCount == 0) {
-        return;
-    }
-    user = user.rows[0];
-    
-    if (bcrypt.compareSync(password, user.hash)) {
-        const { hash, id, ...userWithoutHash } = user;
-        let roles = (await db.client.query("SELECT role FROM dbo.role WHERE uid = $1", [user.id])).rows;
-        roles = roles.map(o => o.role);
-        const token = jwt.sign({ roles: roles, user: user.email }, config.secret);
-        return {
-            ...userWithoutHash,
-            roles,
-            token
-        };
-    }
+  let user = await db.client.query('SELECT * FROM dbo.user WHERE email = $1', [email]);
+  if (user.rowCount === 0)
+    return;
+
+  user = user.rows[0];
+
+  if (bcrypt.compareSync(password, user.hash)) {
+    const { hash, id, ...userWithoutHash } = user;
+    let roles = (await db.client.query('SELECT role FROM dbo.role WHERE uid = $1', [user.id])).rows;
+    roles = roles.map(o => o.role);
+    const token = jwt.sign({ roles: roles, user: user.email }, config.secret);
+    return {
+      ...userWithoutHash,
+      roles,
+      token
+    };
+  }
 }
 
 async function getAll() {
-    /*
-    return await User.find().select('-hash');*/
+  /*
+  return await User.find().select('-hash');*/
 }
 
 async function getByMail(mail) {
-    return await db.client.query("SELECT email FROM dbo.user WHERE email = $1", [mail]);
+  return await db.client.query('SELECT email FROM dbo.user WHERE email = $1', [mail]);
 }
 
 async function getByUsername(username) {/*
@@ -55,7 +55,7 @@ async function create(userParam) {/*
     if (await User.findOne({ username: userParam.username })) {
         throw 'Username "' + userParam.username + '" is already taken';
     }
-    
+
     const user = new User(userParam);
 
     // hash password
