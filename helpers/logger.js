@@ -40,7 +40,7 @@ const logger = createLogger({
       )
     }),
     new transports.File({
-      level: 'info',
+      level: 'debug',
       filename: filename,
       handleExceptions: true,
       maxsize: 5242880, // 5MB
