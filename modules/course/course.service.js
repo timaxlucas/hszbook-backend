@@ -7,7 +7,7 @@ const logger = require('../../helpers/logger');
 const courseSubject = new rxjs.BehaviorSubject();
 courseSubject.next([{}]);
 
-new CronJob('*/5 * * * *', async function() {
+new CronJob('*/10 * * * *', async function() {
   await updateCourseData();
 }, null, true, 'Europe/Berlin');
 
