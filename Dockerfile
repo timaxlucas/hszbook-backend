@@ -17,6 +17,14 @@ RUN apk update && apk upgrade && \
       harfbuzz@edge \
       ttf-freefont@edge
 
+
+RUN apk add --no-cache tzdata
+ENV TZ Europe/Berlin
+
+# set timezone right
+ENV TZ=Europe/Berlin
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 # Create a directory where our app will be placed
 RUN mkdir -p /app
 

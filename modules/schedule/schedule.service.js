@@ -78,14 +78,23 @@ async function listSchedules({}, { user }, all) {
   if (!all)
     res = res.filter(j => j.user === user);
 
-  return res.map(j => ({
-    kid: j.kid,
-    running: j.job.running,
-    link: j.link,
-    date: j.job.nextDate(),
-    user: j.user,
-    data: j.data
-  }));
+  return res.map(j => {
+    let date;
+    try {
+      date = j.job.nextDate();
+    } catch (e) {
+      date = 0;
+    }
+
+    return {
+      kid: j.kid,
+      running: j.job.running,
+      link: j.link,
+      date: date,
+      user: j.user,
+      data: j.data
+    };
+  });
 }
 
 
