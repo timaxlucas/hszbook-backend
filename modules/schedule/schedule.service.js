@@ -33,7 +33,7 @@ async function createSchedule({ date, kid, link, ...data }, { user }, uploadToDB
     throw 'You already scheduled a registration for this course!';
 
   if (date === 0 || date === '0') {
-    registerForCourse(link, kid, data);
+    registerForCourse(link, kid, data).catch(e => logger.error(e, { source: 'schedule' }));
     return;
   }
   if (time.isBefore(Date.now() + 1000 * 20))
