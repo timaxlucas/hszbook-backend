@@ -1,7 +1,5 @@
 # 📜 hszbook-backend
 
-> DISCLAIMER: To run hszbook-backend you need dependency hszbook, which is currently not publicly available
-
 ## Quickstart
 
     npm install && npm start
