@@ -1,5 +1,7 @@
 # 📜 hszbook-backend
 
+Light API to schedule course registrations for RWTH sports. Including user/role system for [hszbook-frontend](https://github.com/timaxlucas/hszbook-frontend).
+
 ## Quickstart
 
     npm install && npm start
