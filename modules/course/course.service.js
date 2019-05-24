@@ -1,6 +1,6 @@
 
 const { CronJob } = require('cron');
-const { getData } = require('../../../hszbook');
+const { getData } = require('hszbook');
 const rxjs = require('rxjs');
 const logger = require('../../helpers/logger');
 

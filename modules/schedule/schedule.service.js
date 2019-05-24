@@ -1,6 +1,6 @@
 
 const { CronJob } = require('cron');
-const { registerForCourse } = require('../../../hszbook');
+const { registerForCourse } = require('hszbook');
 const moment = require('moment');
 const db = require('../../db/db');
 const logger = require('../../helpers/logger');
