@@ -14,7 +14,7 @@ module.exports = {
 };
 
 async function authenticate({ email, password }) {
-  let user = await db.client.query('SELECT * FROM dbo.user WHERE email = $1', [email]);
+  let user = await db.client.query('SELECT * FROM dbo.user WHERE LOWER(email) = LOWER($1)', [email]);
   if (user.rowCount === 0)
     return;
 
