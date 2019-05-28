@@ -18,13 +18,22 @@ module.exports = {
 (async() => {
   const res = await db.getSchedule();
   forEach(res.rows, r => {
-    createSchedule({ date: r.date, kid: r.kid, link: r.link, ...r.data}, { user: r.user }, false);
+    if (moment(new Date(r.date)).isBefore(Date.now())) {
+      // already completed schedule
+      jobs.push({ id: r.id, date: r.date, job: null, data: r.data, user: r.user, kid: r.kid, link: r.link, result: r.result });
+    } else {
+      createSchedule({ date: r.date, kid: r.kid, link: r.link, ...r.data}, { user: r.user }, r.id, false);
+    }
   });
   logger.info(`Loaded ${res.rowCount} schedule(s) from database`, { source: 'schedule' });
 })();
 
 
-async function createSchedule({ date, kid, link, ...data }, { user }, uploadToDB = true) {
+async function createSchedule({ date, kid, link, ...data }, { user }, uploadID = 0, uploadToDB = true) {
+
+  if (!uploadToDB && uploadID === 0)
+    throw 'uploadID cannot be 0 if uploadToDB is false';
+
 
   const time = moment(new Date(date));
 
@@ -42,21 +51,17 @@ async function createSchedule({ date, kid, link, ...data }, { user }, uploadToDB
 
   // upload to DB
   if (uploadToDB)
-    await db.uploadSchedule({ user, date, kid, link, data });
+    uploadID = await db.uploadSchedule({ user, date, kid, link, data });
 
 
   const job = new CronJob(time, async() => {
-    // delete job from jobqueue
-    jobs.splice(jobs.indexOf(this), 1);
-
-    // delete job from database
-    await db.removeSchedule({ user, kid });
-
-    // start register process
-    await registerForCourse(link, kid, data);
+    const res = await registerForCourse(link, kid, data);
+    const ind = jobs.findIndex(obj => obj.id === uploadID);
+    jobs[ind].result = res;
+    await db.updateSchedule(uploadID, res);
   }, null, false, 'Europe/Berlin');
   job.start();
-  jobs.push({ job, data, user, kid, link });
+  jobs.push({ id: uploadID, date, job, data, user, kid, link, result: null });
 }
 
 async function cancelSchedule({ user: userToCancel, kid }, { user, roles }) {
@@ -79,18 +84,19 @@ async function listSchedules({}, { user }, all) {
     res = res.filter(j => j.user === user);
 
   return res.map(j => {
-    let date;
+    let running;
     try {
-      date = j.job.nextDate();
+      running = j.job.running;
     } catch (e) {
-      date = 0;
+      running = false;
     }
 
     return {
+      result: j.result,
       kid: j.kid,
-      running: j.job.running,
+      running: running,
       link: j.link,
-      date: date,
+      date: j.date,
       user: j.user,
       data: j.data
     };

@@ -7,7 +7,6 @@ const pool = new Pool({
   connectionString: connectionString,
 });
 
-
 pool.connect((err, client, release) => {
   if (err) {
     logger.error(err, { source: 'db-init' });
@@ -17,7 +16,12 @@ pool.connect((err, client, release) => {
 });
 
 async function uploadSchedule({ user, date, kid, link, data }) {
-  await pool.query(`INSERT INTO dbo.schedule(data, date, kid, link, "user") VALUES ($1, $2, $3, $4, $5)`, [data, date, kid, link, user]);
+  const res = await pool.query(`INSERT INTO dbo.schedule(data, date, kid, link, "user") VALUES ($1, $2, $3, $4, $5) RETURNING id`, [data, date, kid, link, user]);
+  return res.rows[0].id;
+}
+
+async function updateSchedule(id, res) {
+  console.log(await pool.query(`UPDATE dbo.schedule SET result = $1 WHERE id = $2`, [res, id]));
 }
 
 async function getSchedule() {
@@ -40,5 +44,5 @@ async function close() {
 }
 
 
-module.exports = { client: pool, close, uploadHistory, uploadSchedule, getSchedule, removeSchedule };
+module.exports = { client: pool, close, uploadHistory, uploadSchedule, getSchedule, removeSchedule, updateSchedule };
 
