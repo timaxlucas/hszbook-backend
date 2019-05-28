@@ -1,4 +1,4 @@
 {
   "secret": "<secret>",
-  "connectionString: "<postgres-connectionString>"
+  "connectionString": "<postgres-connectionString>"
 }
