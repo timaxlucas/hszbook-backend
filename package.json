@@ -18,9 +18,11 @@
     "rxjs": "^6.5.2",
     "winston": "^3.2.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "jest": "^24.8.0"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 0",
+    "test": "jest test/test.js",
     "start": "node server.js"
   },
   "repository": {
