@@ -14,31 +14,37 @@ module.exports = {
 };
 
 
-// load schedules from database
-(async() => {
+loadSchedules();
+
+async function loadSchedules() {
   const res = await db.getSchedule();
   forEach(res.rows, r => {
     if (moment(new Date(r.date)).isBefore(Date.now())) {
       // already completed schedule
-      jobs.push({ id: r.id, date: r.date, job: null, data: r.data, user: r.user, kid: r.kid, link: r.link, result: r.result });
+      jobs.push({
+        id: r.id,
+        date: r.date,
+        job: null,
+        data: r.data,
+        user: r.user,
+        kid: r.kid,
+        link: r.link,
+        result: r.result
+      });
     } else {
-      createSchedule({ date: r.date, kid: r.kid, link: r.link, ...r.data}, { user: r.user }, r.id, false);
+      createSchedule({ date: r.date, kid: r.kid, link: r.link, ...r.data}, { user: r.user }, r.id);
     }
   });
   logger.info(`Loaded ${res.rowCount} schedule(s) from database`, { source: 'schedule' });
-})();
+}
 
 
-async function createSchedule({ date, kid, link, ...data }, { user }, uploadID = 0, uploadToDB = true) {
-
-  if (!uploadToDB && uploadID === 0)
-    throw 'uploadID cannot be 0 if uploadToDB is false';
-
+async function createSchedule({ date, kid, link, ...data }, { user }, uploadID = 0) {
 
   const time = moment(new Date(date));
 
   // only one registration per event & user
-  if (jobs.find(e => e.kid === kid && e.user === user))
+  if (jobs.find(e => e.kid === kid && e.user === user && e.running))
     throw 'You already scheduled a registration for this course!';
 
   if (date === 0 || date === '0') {
@@ -50,22 +56,35 @@ async function createSchedule({ date, kid, link, ...data }, { user }, uploadID =
 
 
   // upload to DB
-  if (uploadToDB)
+  if (uploadID === 0)
     uploadID = await db.uploadSchedule({ user, date, kid, link, data });
 
 
   const job = new CronJob(time, async() => {
-    const res = await registerForCourse(link, kid, data);
+    const res = await registerForCourse(link, kid, data, true);
+
+    // update results in job list
     const ind = jobs.findIndex(obj => obj.id === uploadID);
     jobs[ind].result = res;
+
+    // update results in db
     await db.updateSchedule(uploadID, res);
   }, null, false, 'Europe/Berlin');
   job.start();
-  jobs.push({ id: uploadID, date, job, data, user, kid, link, result: null });
+  jobs.push({
+    id: uploadID,
+    date,
+    job,
+    data,
+    user,
+    kid,
+    link,
+    result: null
+  });
 }
 
-async function cancelSchedule({ user: userToCancel, kid }, { user, roles }) {
-  const job = jobs.find(d => d.kid === kid && d.user === userToCancel);
+async function cancelSchedule({ id }, { user, roles }) {
+  const job = jobs.find(d => d.id = id);
   if (!job)
     throw 'schedule not found';
 
@@ -73,8 +92,9 @@ async function cancelSchedule({ user: userToCancel, kid }, { user, roles }) {
     throw 'you are not allowed to cancel others schedules';
 
   // delete job from database
-  await db.removeSchedule({ user: userToCancel, kid });
-  job.job.stop();
+  await db.removeSchedule(id);
+  if (job.job)
+    job.job.stop();
   jobs.splice(jobs.indexOf(job), 1);
 }
 
@@ -92,6 +112,7 @@ async function listSchedules({}, { user }, all) {
     }
 
     return {
+      id: j.id,
       result: j.result,
       kid: j.kid,
       running: running,

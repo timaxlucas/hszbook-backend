@@ -29,8 +29,8 @@ async function getSchedule() {
   return res;
 }
 
-async function removeSchedule({ user, kid }) {
-  await pool.query(`DELETE FROM dbo.schedule WHERE "user" = $1 and kid = $2`, [user, kid]);
+async function removeSchedule(id) {
+  await pool.query(`DELETE FROM dbo.schedule WHERE id = $1`, [id]);
 }
 
 async function uploadHistory(data) {
