@@ -1,5 +1,5 @@
 
-const scheduleService = require('../modules/schedule/schedule.controller');
+const db = require('../db/db');
 
 describe('scheduleService', () => {
   test('abc', () => {

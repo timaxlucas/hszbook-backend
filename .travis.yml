@@ -10,5 +10,5 @@ services:
 before_script:
   - psql -U postgres -d postgres -a -f ./pg-setup.sql
   - export PGPASSWORD="replaceme"
-  #- json='{"secret": "<secret>","connectionString": "postgres://postgres:replaceme@localhost:5432/hszbook"}'
-  #- echo $json > config.json
+  - echo '{"secret":"<secret>","connectionString":"postgres://postgres:replaceme@localhost:5432/hszbook"}' > config.json
+
