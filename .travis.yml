@@ -4,8 +4,8 @@ node_js:
 cache:
   directories:
     - node_modules
-services:
-  - postgresql
+addons:
+  postgresql: "9.4"
 # allow headful tests
 before_script:
   - psql -U postgres -d postgres -a -f ./pg-setup.sql
