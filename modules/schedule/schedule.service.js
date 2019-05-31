@@ -85,7 +85,7 @@ async function createSchedule({ date, kid, link, ...data }, { user }, uploadID =
 }
 
 async function cancelSchedule({ id }, { user, roles }) {
-  const job = jobs.find(d => d.id === id);
+  const job = jobs.find(d => d.id === parseInt(id, 10));
   if (!job)
     throw 'schedule not found';
 
