@@ -81,6 +81,7 @@ async function createSchedule({ date, kid, link, ...data }, { user }, uploadID =
     link,
     result: null
   });
+  return uploadID;
 }
 
 async function cancelSchedule({ id }, { user, roles }) {

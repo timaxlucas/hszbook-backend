@@ -42,7 +42,8 @@ create table if not exists schedule
 	date timestamp not null,
 	kid varchar not null,
 	link varchar not null,
-	"user" varchar not null
+	"user" varchar not null,
+  	result jsonb
 );
 
 alter table schedule owner to postgres;
