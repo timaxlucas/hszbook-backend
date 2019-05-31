@@ -2,24 +2,24 @@ create schema dbo;
 
 alter schema dbo owner to postgres;
 
-create table if not exists history
+create table if not exists dbo.history
 (
 	kursnr varchar not null,
 	timestamp timestamp default now() not null,
 	state varchar not null
 );
 
-alter table history owner to postgres;
+alter table dbo.history owner to postgres;
 
-create table if not exists role
+create table if not exists dbo.role
 (
 	uid integer not null,
 	role varchar
 );
 
-alter table role owner to postgres;
+alter table dbo.role owner to postgres;
 
-create table if not exists "user"
+create table if not exists dbo."user"
 (
 	id serial not null
 		constraint user_pk
@@ -28,12 +28,12 @@ create table if not exists "user"
 	hash varchar not null
 );
 
-alter table "user" owner to postgres;
+alter table dbo."user" owner to postgres;
 
 create unique index if not exists user_email_uindex
-	on "user" (email);
+	on dbo."user" (email);
 
-create table if not exists schedule
+create table if not exists dbo.schedule
 (
 	id serial not null
 		constraint schedule_pk
@@ -46,5 +46,5 @@ create table if not exists schedule
   	result jsonb
 );
 
-alter table schedule owner to postgres;
+alter table dbo.schedule owner to postgres;
 
