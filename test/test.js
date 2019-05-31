@@ -23,8 +23,8 @@ describe('scheduleService', () => {
 
 describe('scheduleService', () => {
   test('register and delete', async () => {
+    expect.assertions(3);
 
-    expect.assertions(1);
     const link = 'https://buchung.hsz.rwth-aachen.de/angebote/Sommersemester_2019/_Basketball_Spielbetrieb.html';
     const kid = '13131823';
     const data = {
@@ -44,18 +44,21 @@ describe('scheduleService', () => {
       link,
       data
     }, {
-        user: 'test@example.de'
+        user: 'testuser'
       });
 
+    const res = await sc.listSchedules({}, { user: 'testuser' }, false);
+    expect(res).toHaveLength(1);
+    expect(res[0].id).toBe(id);
+
+
     try {
-      await sc.cancelSchedule({ id }, { user: 'someone', roles: [] });
+      await sc.cancelSchedule({ id }, { user: 'somehobo', roles: [] });
     } catch (e) {
       expect(e).toMatch("you are not allowed to cancel others schedules");
     }
 
-    await sc.cancelSchedule({ id }, { user: 'test@example.de' })
-
-
+    await sc.cancelSchedule({ id }, { user: 'testuser', roles: [] });
 
   }, 10 * 1000);
 });
