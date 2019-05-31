@@ -32,7 +32,7 @@ describe('scheduleService', () => {
       date: moment().add(1, 'months').format(),
       kid,
       link,
-      data
+      ...data
     }, {
       user: 'adminuser',
       roles: ['admin']
@@ -41,7 +41,7 @@ describe('scheduleService', () => {
       date: moment().add(1, 'months').format(),
       kid,
       link,
-      data
+      ...data
     }, {
       user: 'adminuser',
       roles: ['admin']
@@ -71,7 +71,7 @@ describe('scheduleService', () => {
       date: moment().add(1, 'minutes').format(),
       kid,
       link,
-      data
+      ...data
     }, {
       user: 'testuser',
       roles: []
@@ -86,7 +86,7 @@ describe('scheduleService', () => {
         date: moment().add(1, 'minutes').format(),
         kid,
         link,
-        data
+        ...data
       }, {
         user: 'testuser',
         roles: []
