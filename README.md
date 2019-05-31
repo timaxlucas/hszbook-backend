@@ -1,4 +1,4 @@
-# 📜 hszbook-backend
+# 📜 hszbook-backend [![Build Status](https://travis-ci.com/timaxlucas/hszbook-backend.svg?branch=master)](https://travis-ci.com/timaxlucas/hszbook-backend)
 
 Light API to schedule course registrations for RWTH sports. Including user/role system for [hszbook-frontend](https://github.com/timaxlucas/hszbook-frontend).
 
