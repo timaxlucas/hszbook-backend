@@ -32,19 +32,19 @@ async function loadSchedules() {
         result: r.result
       });
     } else {
-      createSchedule({ date: r.date, kid: r.kid, link: r.link, ...r.data}, { user: r.user }, r.id);
+      createSchedule({ date: r.date, kid: r.kid, link: r.link, ...r.data}, { user: r.user, roles: ['admin'] }, r.id);
     }
   });
   logger.info(`Loaded ${res.rowCount} schedule(s) from database`, { source: 'schedule' });
 }
 
 
-async function createSchedule({ date, kid, link, ...data }, { user }, uploadID = 0) {
+async function createSchedule({ date, kid, link, ...data }, { user, roles }, uploadID = 0) {
 
   const time = moment(new Date(date));
 
-  // only one registration per event & user
-  if (jobs.find(e => e.kid === kid && e.user === user && e.running))
+  // only one registration per event & user or admin
+  if (jobs.find((e => e.kid === kid && e.user === user && moment(new Date(e.date)).isAfter(Date.now()))) && roles.indexOf('admin') === -1)
     throw 'You already scheduled a registration for this course!';
 
   if (date === 0 || date === '0') {
@@ -85,6 +85,9 @@ async function createSchedule({ date, kid, link, ...data }, { user }, uploadID =
 }
 
 async function cancelSchedule({ id }, { user, roles }) {
+  if (!id)
+    throw 'no id specified';
+
   const job = jobs.find(d => d.id === parseInt(id, 10));
   if (!job)
     throw 'schedule not found';

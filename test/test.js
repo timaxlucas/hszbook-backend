@@ -4,6 +4,7 @@ const moment = require('moment');
 
 
 describe('scheduleService', () => {
+
   test('invalid time check', async () => {
     expect.assertions(1);
 
@@ -13,17 +14,45 @@ describe('scheduleService', () => {
         kid: '1234567',
         link: '//',
       }, {
-          user: 'test@example.de'
+          user: 'test@example.de',
+          roles: []
         });
     } catch (e) {
       expect(e).toMatch(/invalid date/);
     }
   }, 10 * 1000);
-});
 
-describe('scheduleService', () => {
+  test('admin multiple register', async () => {
+    expect.assertions(0);
+
+    const link = 'demolink';
+    const kid = '13131823';
+    const data = { firstname: 'John' };
+    const id1 = await sc.createSchedule({
+      date: moment().add(1, 'months').format(),
+      kid,
+      link,
+      data
+    }, {
+        user: 'adminuser',
+        roles: ['admin']
+      });
+    const id2 = await sc.createSchedule({
+      date: moment().add(1, 'months').format(),
+      kid,
+      link,
+      data
+    }, {
+        user: 'adminuser',
+        roles: ['admin']
+      });
+
+    await sc.cancelSchedule({ id: id1 }, { user: 'adminuser', roles: [] });
+    await sc.cancelSchedule({ id: id2 }, { user: 'adminuser', roles: [] });
+  });
+
   test('register and delete', async () => {
-    expect.assertions(3);
+    expect.assertions(4);
 
     const link = 'https://buchung.hsz.rwth-aachen.de/angebote/Sommersemester_2019/_Basketball_Spielbetrieb.html';
     const kid = '13131823';
@@ -44,13 +73,27 @@ describe('scheduleService', () => {
       link,
       data
     }, {
-        user: 'testuser'
+        user: 'testuser',
+        roles: []
       });
 
     const res = await sc.listSchedules({}, { user: 'testuser' }, false);
     expect(res).toHaveLength(1);
     expect(res[0].id).toBe(id);
 
+    try {
+      await sc.createSchedule({
+        date: moment().add(1, 'minutes').format(),
+        kid,
+        link,
+        data
+      }, {
+          user: 'testuser',
+          roles: []
+        });
+    } catch (e) {
+      expect(e).toMatch("You already scheduled a registration for this course!");
+    }
 
     try {
       await sc.cancelSchedule({ id }, { user: 'somehobo', roles: [] });
