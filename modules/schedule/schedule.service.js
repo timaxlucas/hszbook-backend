@@ -42,26 +42,18 @@ async function loadSchedules() {
 async function createSchedule({ date, kid, link, ...data }, { user, roles }, uploadID = 0) {
 
   const time = moment(new Date(date));
+  let cron = true;
+
+  if (!time.isValid() && date !== 0 && date !== '0')
+    throw 'date is not valid';
+
 
   // only one registration per event & user or admin
   if (jobs.find((e => e.kid === kid && e.user === user && moment(new Date(e.date)).isAfter(Date.now()))) && roles.indexOf('admin') === -1)
     throw 'You already scheduled a registration for this course!';
 
-  if (date === 0 || date === '0') {
-    registerForCourse(link, kid, data).catch(e => logger.error(e, { source: 'schedule' }));
-    return;
-  }
-  if (time.isBefore(Date.now() + 1000 * 20))
-    throw `invalid date: date is ${time.fromNow()}`;
-
-
-  // upload to DB
-  if (uploadID === 0)
-    uploadID = await db.uploadSchedule({ user, date, kid, link, data });
-
-
-  const job = new CronJob(time, async() => {
-    const res = await registerForCourse(link, kid, data, true);
+  const fnc = (async() => {
+    const res = await registerForCourse(link, kid, data);
 
     // update results in job list
     const ind = jobs.findIndex(obj => obj.id === uploadID);
@@ -69,18 +61,49 @@ async function createSchedule({ date, kid, link, ...data }, { user, roles }, upl
 
     // update results in db
     await db.updateSchedule(uploadID, res);
-  }, null, false, 'Europe/Berlin');
-  job.start();
-  jobs.push({
-    id: uploadID,
-    date,
-    job,
-    data,
-    user,
-    kid,
-    link,
-    result: null
   });
+
+
+  if (date === 0 || date === '0') {
+    cron = false;
+    date = moment();
+  } else if (time.isBefore(Date.now() + 1000 * 20)) {
+    throw `invalid date: date is ${time.fromNow()}`;
+  }
+
+
+  // upload to DB
+  if (uploadID === 0)
+    uploadID = await db.uploadSchedule({ user, date, kid, link, data });
+
+  if (cron) {
+    const job = new CronJob(time, fnc, null, false, 'Europe/Berlin');
+    jobs.push({
+      id: uploadID,
+      date,
+      job,
+      data,
+      user,
+      kid,
+      link,
+      result: null
+    });
+    job.start();
+  } else {
+    fnc();
+    jobs.push({
+      id: uploadID,
+      date,
+      job: null,
+      data,
+      user,
+      kid,
+      link,
+      result: null
+    });
+  }
+
+
   return uploadID;
 }
 

@@ -21,7 +21,7 @@ async function uploadSchedule({ user, date, kid, link, data }) {
 }
 
 async function updateSchedule(id, res) {
-  console.log(await pool.query(`UPDATE dbo.schedule SET result = $1 WHERE id = $2`, [res, id]));
+  await pool.query(`UPDATE dbo.schedule SET result = $1 WHERE id = $2`, [res, id]);
 }
 
 async function getSchedule() {
