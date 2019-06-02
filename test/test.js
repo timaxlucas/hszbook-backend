@@ -103,7 +103,7 @@ describe('scheduleService', () => {
 
     await sc.cancelSchedule({ id }, { user: 'testuser', roles: [] });
 
-  }, 10 * 1000);
+  }, 5 * 1000);
 });
 
 
