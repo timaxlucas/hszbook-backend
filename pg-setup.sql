@@ -25,7 +25,8 @@ create table if not exists dbo."user"
 		constraint user_pk
 			primary key,
 	email varchar not null,
-	hash varchar not null
+	hash varchar not null,
+	defaultdata jsonb
 );
 
 alter table dbo."user" owner to postgres;
