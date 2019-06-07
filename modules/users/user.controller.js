@@ -7,6 +7,7 @@ const authorize = require('../../helpers/authorize');
 // routes
 router.post('/authenticate', authenticate);
 router.post('/setDefaultData',  authorize(), setDefaultData);
+router.get('/getDefaultData',  authorize(), getDefaultData);
 // router.post('/register', register);
 // router.get('/:id', getById);
 // router.get('/username/:username', getByUsername);
@@ -29,6 +30,12 @@ function authenticate(req, res, next) {
 
 function setDefaultData(req, res, next) {
   userService.setDefaultData(req.body, req.user)
+      .then(user => res.json(user))
+      .catch(err => next(err));
+}
+
+function getDefaultData(req, res, next) {
+  userService.getDefaultData(req.user)
       .then(user => res.json(user))
       .catch(err => next(err));
 }
