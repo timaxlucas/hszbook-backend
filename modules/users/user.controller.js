@@ -2,21 +2,22 @@ const express = require('express');
 const router = express.Router();
 const userService = require('./user.service');
 const authorize = require('../../helpers/authorize');
-const Role = require('../../helpers/role');
+// const Role = require('../../helpers/role');
 
 // routes
 router.post('/authenticate', authenticate);
-router.post('/register', register);
-router.get('/:id', getById);
-router.get('/username/:username', getByUsername);
+router.post('/setDefaultData',  authorize(), setDefaultData);
+// router.post('/register', register);
+// router.get('/:id', getById);
+// router.get('/username/:username', getByUsername);
 
 // requires authenticated user
-router.get('/current', authorize(), getCurrent);
+// router.get('/current', authorize(), getCurrent);
 
 // requires admin
-router.get('/', authorize(Role.Admin), getAll);
-router.put('/:id', authorize(Role.Admin), update);
-router.delete('/:id', authorize(Role.Admin), _delete);
+// router.get('/', authorize(Role.Admin), getAll);
+// router.put('/:id', authorize(Role.Admin), update);
+// router.delete('/:id', authorize(Role.Admin), _delete);
 
 module.exports = router;
 
@@ -26,6 +27,12 @@ function authenticate(req, res, next) {
       .catch(err => next(err));
 }
 
+function setDefaultData(req, res, next) {
+  userService.setDefaultData(req.body, req.user)
+      .then(user => res.json(user))
+      .catch(err => next(err));
+}
+/*
 function register(req, res, next) {
   userService.create(req.body)
       .then(() => res.json({}))
@@ -66,4 +73,4 @@ function _delete(req, res, next) {
   userService.delete(req.params.id)
       .then(() => res.json({}))
       .catch(err => next(err));
-}
+}*/

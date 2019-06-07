@@ -5,6 +5,7 @@ const db = require('../../db/db');
 
 module.exports = {
   authenticate,
+  setDefaultData,
   getAll,
   getByMail,
   create,
@@ -31,6 +32,11 @@ async function authenticate({ email, password }) {
       token
     };
   }
+}
+
+async function setDefaultData({ firstname, surname, street, city, gender, iban, phone, matrnr, email }, { user }) {
+  const data = { firstname, surname, street, city, gender, iban, phone, matrnr, email };
+  await db.client.query('UPDATE dbo.user SET defaultdata = $1 WHERE email = $2', [data, user]);
 }
 
 async function getAll() {
