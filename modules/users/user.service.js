@@ -37,7 +37,7 @@ async function authenticate({ email, password }) {
 
 async function getDefaultData({ user }) {
   const res = await db.client.query('SELECT defaultdata FROM dbo.user WHERE email = $1', [user]);
-  return res.rows;
+  return res.rows[0].defaultdata;
 }
 
 async function setDefaultData({ firstname, surname, street, city, gender, iban, phone, matrnr, email }, { user }) {
