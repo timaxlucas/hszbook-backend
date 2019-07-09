@@ -44,8 +44,20 @@ create table if not exists dbo.schedule
 	kid varchar not null,
 	link varchar not null,
 	"user" varchar not null,
-  	result jsonb
+  	result jsonb,
+	sport varchar
 );
 
 alter table dbo.schedule owner to postgres;
+
+create table if not exists dbo.sport
+(
+	id serial not null
+		constraint sport_pk
+			primary key,
+	name varchar not null,
+	link varchar not null
+);
+
+alter table dbo.sport owner to postgres;
 
