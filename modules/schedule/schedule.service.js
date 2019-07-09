@@ -4,7 +4,6 @@ const { registerForCourse } = require('hszbook');
 const moment = require('moment');
 const db = require('../../db/db');
 const logger = require('../../helpers/logger');
-const { forEach } = require('async-foreach');
 const jobs = [];
 
 module.exports = {
@@ -29,17 +28,18 @@ async function loadSchedules() {
         user: r.user,
         kid: r.kid,
         link: r.link,
+        sport: r.sport,
         result: r.result
       });
     } else {
-      await createSchedule({ date: r.date, kid: r.kid, link: r.link, ...r.data}, { user: r.user, roles: ['admin'] }, r.id);
+      await createSchedule({ date: r.date, kid: r.kid, link: r.link, sport: r.sport, ...r.data}, { user: r.user, roles: ['admin'] }, r.id);
     }
   }
   logger.info(`Loaded ${res.rowCount} schedule(s) from database`, { source: 'schedule' });
 }
 
 
-async function createSchedule({ date, kid, link, ...data }, { user, roles }, uploadID = 0) {
+async function createSchedule({ date, kid, link, sport, ...data }, { user, roles }, uploadID = 0) {
 
   const time = moment(new Date(date));
   let cron = true;
@@ -74,7 +74,7 @@ async function createSchedule({ date, kid, link, ...data }, { user, roles }, upl
 
   // upload to DB
   if (uploadID === 0)
-    uploadID = await db.uploadSchedule({ user, date, kid, link, data });
+    uploadID = await db.uploadSchedule({ user, date, kid, link, sport, data });
 
   if (cron) {
     const job = new CronJob(time, fnc, null, false, 'Europe/Berlin');
@@ -86,6 +86,7 @@ async function createSchedule({ date, kid, link, ...data }, { user, roles }, upl
       user,
       kid,
       link,
+      sport,
       result: null
     });
     job.start();
@@ -99,6 +100,7 @@ async function createSchedule({ date, kid, link, ...data }, { user, roles }, upl
       user,
       kid,
       link,
+      sport,
       result: null
     });
   }
@@ -144,6 +146,7 @@ async function listSchedules({}, { user }, all) {
       kid: j.kid,
       running: running,
       link: j.link,
+      sport: j.sport,
       date: j.date,
       user: j.user,
       data: j.data

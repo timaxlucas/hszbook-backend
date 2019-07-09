@@ -14,8 +14,8 @@ pool.connect((err, client, release) => {
   release();
 });
 
-async function uploadSchedule({ user, date, kid, link, data }) {
-  const res = await pool.query(`INSERT INTO dbo.schedule(data, date, kid, link, "user") VALUES ($1, $2, $3, $4, $5) RETURNING id`, [data, date, kid, link, user]);
+async function uploadSchedule({ user, date, kid, link, sport, data }) {
+  const res = await pool.query(`INSERT INTO dbo.schedule(data, date, kid, link, "user", sport) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`, [data, date, kid, link, user, sport]);
   return res.rows[0].id;
 }
 
