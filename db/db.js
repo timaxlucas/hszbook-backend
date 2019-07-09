@@ -1,6 +1,5 @@
 const { Pool } = require('pg');
 const logger = require('../helpers/logger');
-const { forEach } = require('async-foreach');
 const { connectionString } = require('../config.json');
 
 const pool = new Pool({
@@ -34,9 +33,8 @@ async function removeSchedule(id) {
 }
 
 async function uploadHistory(data) {
-  forEach(data, d => {
-    pool.query('INSERT INTO dbo.history(kursnr, state) VALUES ($1, $2)', [d.kid, d.state]);
-  });
+  for (const d of data)
+    await pool.query('INSERT INTO dbo.history(kursnr, state) VALUES ($1, $2)', [d.kid, d.state]);
 }
 
 async function close() {

@@ -18,7 +18,7 @@ loadSchedules();
 
 async function loadSchedules() {
   const res = await db.getSchedule();
-  forEach(res.rows, r => {
+  for (const r of res.rows) {
     if (moment(new Date(r.date)).isBefore(Date.now())) {
       // already completed schedule
       jobs.push({
@@ -32,9 +32,9 @@ async function loadSchedules() {
         result: r.result
       });
     } else {
-      createSchedule({ date: r.date, kid: r.kid, link: r.link, ...r.data}, { user: r.user, roles: ['admin'] }, r.id);
+      await createSchedule({ date: r.date, kid: r.kid, link: r.link, ...r.data}, { user: r.user, roles: ['admin'] }, r.id);
     }
-  });
+  }
   logger.info(`Loaded ${res.rowCount} schedule(s) from database`, { source: 'schedule' });
 }
 
