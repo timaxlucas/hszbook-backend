@@ -23,6 +23,11 @@ async function updateSchedule(id, res) {
   await pool.query(`UPDATE dbo.schedule SET result = $1 WHERE id = $2`, [res, id]);
 }
 
+async function getSports() {
+  const res = await pool.query('SELECT * FROM dbo.sport');
+  return res;
+}
+
 async function getSchedule() {
   const res = await pool.query('SELECT * FROM dbo.schedule');
   return res;
@@ -42,5 +47,5 @@ async function close() {
 }
 
 
-module.exports = { client: pool, close, uploadHistory, uploadSchedule, getSchedule, removeSchedule, updateSchedule };
+module.exports = { client: pool, close, uploadHistory, uploadSchedule, getSchedule, removeSchedule, updateSchedule, getSports };
 

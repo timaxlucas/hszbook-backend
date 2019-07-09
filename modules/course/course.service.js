@@ -1,32 +1,65 @@
 
 const { CronJob } = require('cron');
 const { getData } = require('hszbook');
+const { getSports } = require('../../db/db');
 const rxjs = require('rxjs');
 const logger = require('../../helpers/logger');
 
-const courseSubject = new rxjs.BehaviorSubject();
-courseSubject.next([{}]);
+// const courseSubject = new rxjs.BehaviorSubject({});
+const sports = [];
 
-new CronJob('*/10 * * * *', async function() {
-  await updateCourseData();
+new CronJob('*/20 * * * *', async function() {
+  await updateSportData();
 }, null, true, 'Europe/Berlin');
 
 module.exports = {
-  listCourses
+  listCourses,
+  listSports
 };
 
-async function listCourses() {
-  const res = courseSubject.value;
-  return res;
+async function listCourses({ sport }) {
+  const res = sports.find(x => x.value.sport === sport);
+  if (res === undefined)
+    throw 'sport not found';
+  return res.value;
 }
 
-async function updateCourseData() {
-  const data = await getData('https://buchung.hsz.rwth-aachen.de/angebote/Sommersemester_2019/_Volleyball_Spielbetrieb.html');
-  courseSubject.next({
-    timestamp: Date.now(),
-    data: data
+async function listSports() {
+  const res = (await getSports()).rows;
+  const l = [];
+  for (const r of res)
+    l.push(r.name);
+  return l;
+}
+
+async function loadSports(loadSportData = false) {
+  const res = (await getSports()).rows;
+  res.forEach(r => {
+    const subject = new rxjs.BehaviorSubject({
+      sport: r.name,
+      timestamp: Date.now(),
+      data: [],
+      link: r.link
+    });
+    sports.push(subject);
   });
-  logger.debug(`updated course data`, { source: 'course' });
+  logger.debug(`Loaded ${sports.length} sports from database`, { source: 'course' });
+
+  if (loadSportData)
+    updateSportData();
 }
 
-updateCourseData();
+async function updateSportData() {
+  for (const c of sports) {
+    const data = await getData(c.value.link);
+    c.next({
+      sport: c.value.sport,
+      timestamp: Date.now(),
+      data: data,
+      link: c.value.link
+    });
+    logger.debug(`updated course data for sport ${c.value.sport}`, { source: 'course' });
+  }
+}
+
+loadSports(true);
