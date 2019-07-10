@@ -17,6 +17,7 @@ loadSchedules();
 
 async function loadSchedules() {
   const res = await db.getSchedule();
+  let activeCount = 0;
   for (const r of res.rows) {
     if (moment(new Date(r.date)).isBefore(Date.now())) {
       // already completed schedule
@@ -32,10 +33,11 @@ async function loadSchedules() {
         result: r.result
       });
     } else {
+      activeCount++;
       await createSchedule({ date: r.date, kid: r.kid, link: r.link, sport: r.sport, ...r.data}, { user: r.user, roles: ['admin'] }, r.id);
     }
   }
-  logger.info(`Loaded ${res.rowCount} schedule(s) from database`, { source: 'schedule' });
+  logger.info(`Loaded ${res.rowCount} schedule(s) from database, ${activeCount} of them are active`, { source: 'schedule' });
 }
 
 
