@@ -13,9 +13,9 @@ app.use(cors());
 
 
 // ==== api routes ====
-app.use('/schedule', authorize(), require('./modules/schedule/schedule.controller'));
-app.use('/users', require('./modules/users/user.controller'));
-app.use('/course',  authorize(), require('./modules/course/course.controller'));
+app.use('/api/schedule', authorize(), require('./modules/schedule/schedule.controller'));
+app.use('/api/users', require('./modules/users/user.controller'));
+app.use('/api/course',  authorize(), require('./modules/course/course.controller'));
 
 
 // global error handler
