@@ -13,7 +13,7 @@
     "express-jwt": "^5.3.1",
     "hszbook": "^1.0.7",
     "jsonwebtoken": "^8.5.1",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "pg": "^7.11.0",
     "rxjs": "^6.5.2",
     "winston": "^3.2.1"
